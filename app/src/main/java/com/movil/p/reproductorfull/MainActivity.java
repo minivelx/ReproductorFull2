@@ -25,13 +25,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
     //Botones
-    Button btnPause, btnStart, btnStop, btnnext, btnBack;
+    Button btnPause, btnStart, btnStop, btnnext, btnBack, btnrepeat;
     //Barra de progreso
     SeekBar seekbar;
     private Handler myHandler = new Handler();
     private double startTime = 0;
     //visor de tiempo
     TextView tx1;
+    //repetir lista
+    boolean loop = false;
     //Intent
     Intent intent;
     int oneTimeOnly = 0;
@@ -59,9 +61,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
+                if (oneTimeOnly == 0) {
+                    seekbar.setMax((int) ServicioMusica.getMediaPlayer().getDuration());
+                    Log.i("duracion:",String.valueOf(ServicioMusica.getMediaPlayer().getDuration()/1000));
+                    oneTimeOnly = 1;
+                }
+
                 if(fromUser){
                     ServicioMusica.getMediaPlayer().seekTo(progress);
                     seekbar.setProgress(progress);
+                }
+                //se revisa si la canción finalizo
+                if(progress >= ServicioMusica.getMediaPlayer().getDuration() -200 ){
+                    Log.i("Progressbar","canción terminada");
+                    intent.setAction(ACTION_STOP);
+                    startService(intent);
+                    //si el boton de repetir lista esta pulsado pasamos al sgte cancion
+                    if(cursor==2 && loop){
+                        next(true);
+                    }else{
+                        if(cursor!=2)
+                            next(true);
+                    }
+
                 }
             }
         });
@@ -74,12 +96,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPause = (Button) findViewById(R.id.btnPause);
         btnnext = (Button) findViewById(R.id.btnNext);
         btnBack = (Button) findViewById(R.id.btnBack);
+        btnrepeat = (Button) findViewById(R.id.btnRepetir);
 
         btnStart.setOnClickListener(this);
         btnStop.setOnClickListener(this);
         btnPause.setOnClickListener(this);
         btnnext.setOnClickListener(this);
         btnBack.setOnClickListener(this);
+        btnrepeat.setOnClickListener(this);
     }
 
     @Override
@@ -107,23 +131,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.btnNext:
-                intent.setAction(ACTION_NEXT);
-                actualizarCursor(true);
-                intent.putExtra("cursor",cursor);
-                startService(intent);
-                //cambiar la vista y actualizar la portada de la cancion
-                oneTimeOnly=0;
+                next(true);
                 break;
 
             case R.id.btnBack:
-                intent.setAction(ACTION_BACK);
-                actualizarCursor(false);
-                intent.putExtra("cursor",cursor);
-                startService(intent);
-                //cambiar la vista y actualizar la portada de la cancion
-                oneTimeOnly=0;
+                next(false);
+                break;
+
+            case R.id.btnRepetir:
+                //se alterna entre On y Off
+                loop = !loop;
+                if(loop){
+                    btnrepeat.setText("ON");
+                }else{
+                    btnrepeat.setText("OFF");
+                }
                 break;
         }
+    }
+
+    private void next(boolean value) {
+        intent.setAction(ACTION_NEXT);
+        intent.setAction(ACTION_BACK);
+        actualizarCursor(value);
+        intent.putExtra("cursor",cursor);
+        startService(intent);
+        //cambiar la vista y actualizar la portada de la cancion
+        oneTimeOnly=0;
     }
 
     private void actualizarCursor(boolean up) {
@@ -145,10 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Runnable UpdateSongTime = new Runnable() {
         public void run() {
 
-            if (oneTimeOnly == 0) {
-                seekbar.setMax((int) ServicioMusica.getMediaPlayer().getDuration());
-                oneTimeOnly = 1;
-            }
+
             startTime = ServicioMusica.getMediaPlayer().getCurrentPosition();
             tx1.setText(String.format("%d: %d",
                     TimeUnit.MILLISECONDS.toMinutes((long) startTime),
