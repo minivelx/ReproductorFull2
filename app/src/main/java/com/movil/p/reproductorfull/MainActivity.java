@@ -8,6 +8,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -26,9 +29,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Barra de progreso
     SeekBar seekbar;
     private Handler myHandler = new Handler();
+    private double startTime = 0;
+    //visor de tiempo
+    TextView tx1;
     //Intent
     Intent intent;
-    boolean onlyOnetime = false;
+    int oneTimeOnly = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +43,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         vincularBotones();
         intent = new Intent(MainActivity.this,ServicioMusica.class);
+
+        tx1 = (TextView)findViewById(R.id.timer);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if(fromUser){
+                    ServicioMusica.getMediaPlayer().seekTo(progress);
+                    seekbar.setProgress(progress);
+                }
+            }
+        });
 
     }
 
@@ -64,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setAction(ACTION_PLAY);
                 intent.putExtra("cursor",cursor);
                 startService(intent);
+
+                seekbar.setProgress((int)startTime);
+                myHandler.postDelayed(UpdateSongTime,100);
                 break;
 
             case R.id.btnPause:
@@ -82,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("cursor",cursor);
                 startService(intent);
                 //cambiar la vista y actualizar la portada de la cancion
+                oneTimeOnly=0;
                 break;
 
             case R.id.btnBack:
@@ -90,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("cursor",cursor);
                 startService(intent);
                 //cambiar la vista y actualizar la portada de la cancion
+                oneTimeOnly=0;
                 break;
         }
     }
@@ -110,4 +142,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private Runnable UpdateSongTime = new Runnable() {
+        public void run() {
+
+            if (oneTimeOnly == 0) {
+                seekbar.setMax((int) ServicioMusica.getMediaPlayer().getDuration());
+                oneTimeOnly = 1;
+            }
+            startTime = ServicioMusica.getMediaPlayer().getCurrentPosition();
+            tx1.setText(String.format("%d: %d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                    toMinutes((long) startTime)))
+            );
+            seekbar.setProgress((int)startTime);
+            myHandler.postDelayed(this, 100);
+        }
+    };
 }
