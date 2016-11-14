@@ -18,14 +18,27 @@
 
         <service
             android:name=".ServicioMusica"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.movil.p.reproductorfull.ACTION_PLAY" />
                 <action android:name="com.movil.p.reproductorfull.ACTION_PAUSE" />
+
                 <category android:name="com.movil.p.reproductorfull.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.movil.p.reproductorfull.ACTION_PLAY" />
+                <action android:name="com.movil.p.reproductorfull.ACTION_PAUSE" />
+
+                <category android:name="com.movil.p.reproductorfull.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </receiver>
     </application>
 
 </manifest>

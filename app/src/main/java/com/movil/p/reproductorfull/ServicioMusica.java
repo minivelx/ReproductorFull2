@@ -1,12 +1,15 @@
 package com.movil.p.reproductorfull;
 
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
+import android.widget.RemoteViews;
 
 public class ServicioMusica extends Service{
 
@@ -18,6 +21,12 @@ public class ServicioMusica extends Service{
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
+    private static final int REQUEST_CODE_PLAY = 0;
+    private static final int REQUEST_CODE_PAUSE = 1;
+    private static final int REQUEST_CODE_STOP = 2;
+    private static final int REQUEST_CODE_NEXT = 3;
+    private static final int REQUEST_CODE_BACK = 4;
+
     //Media player
     static MediaPlayer mp = null;
     //Lista canciones
@@ -29,7 +38,40 @@ public class ServicioMusica extends Service{
 
     @Override
     public void onCreate() {
-        //startForeground();
+        super.onCreate();
+
+    }
+
+    private void foreground(){
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
+        Intent intent;
+        PendingIntent pendingIntent;
+
+        intent = new Intent(getApplicationContext(), MyReceiver.class);
+        intent.setAction(ACTION_PLAY);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                REQUEST_CODE_PLAY, intent, 0);
+
+        remoteViews.setOnClickPendingIntent(R.id.boton_play,
+                pendingIntent);
+
+        intent = new Intent(getApplicationContext(), MyReceiver.class);
+        intent.setAction(ACTION_PAUSE);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                REQUEST_CODE_PAUSE, intent, 0);
+
+        remoteViews.setOnClickPendingIntent(R.id.boton_pause,
+                pendingIntent);
+
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.icono_play)
+                .setOngoing(true)
+                .setContentTitle("Reproductor de musica")
+                .setWhen(System.currentTimeMillis())
+                .setContent(remoteViews)
+
+                .build();
+        startForeground(100, notification);
     }
 
     //******************MAIN******************************
@@ -43,7 +85,7 @@ public class ServicioMusica extends Service{
             cursor = intent.getIntExtra("cursor",0);
             Log.i("Cursor seteado",String.valueOf(cursor));
             //solo se ejcutara la primer vez que le den al play
-            if (workerThread == null /*|| !workerThread.isAlive() */) {
+            if ( workerThread == null || !workerThread.isAlive() ) {
                 Log.i("onThead","creando hilo");
                 workerThread = new Thread(new Runnable() {
                     @Override
@@ -56,6 +98,7 @@ public class ServicioMusica extends Service{
             }else{
                 start();
             }
+            foreground();
         }
 
         //Btn pause pulsado
@@ -69,7 +112,7 @@ public class ServicioMusica extends Service{
 
         //Btn stop pulsado
         if (intent.getAction().equals(ACTION_STOP)) {
-
+            stopForeground(true);
             if(mp != null) {
                 Log.i("Stop","parado");
                 mp.stop();
@@ -147,6 +190,23 @@ public class ServicioMusica extends Service{
 
         mp = MediaPlayer.create(this, lista[cursor]);
         mp.start();
+
+    }
+
+    //broadcast
+    static public void interfaz(int action){
+
+        switch (action){
+
+            case REQUEST_CODE_PLAY :
+                mp.start();
+                break;
+
+            case REQUEST_CODE_PAUSE :
+                mp.pause();
+                break;
+
+        }
 
     }
 

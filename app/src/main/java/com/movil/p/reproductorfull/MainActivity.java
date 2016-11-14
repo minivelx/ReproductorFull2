@@ -1,21 +1,28 @@
 package com.movil.p.reproductorfull;
 
-import android.content.Intent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Handler;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     //ID de la cancion inicial
-    private int cursor = 0;
+    private static int cursor = 0;
     //numero de canciones en la lista
     private int num = 3;
     //Acciones
@@ -24,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
+    private static final int REQUEST_CODE_PLAY = 0;
+    private static final int REQUEST_CODE_PAUSE = 1;
     //Botones
     Button btnPause, btnStart, btnStop, btnnext, btnBack, btnrepeat;
     //Barra de progreso
@@ -35,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //repetir lista
     boolean loop = false;
     //Intent
-    Intent intent;
+    static Intent intent;
     int oneTimeOnly = 0;
 
     @Override
@@ -191,4 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             myHandler.postDelayed(this, 100);
         }
     };
+
+
+
 }
