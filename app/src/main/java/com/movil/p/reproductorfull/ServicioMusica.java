@@ -2,25 +2,30 @@ package com.movil.p.reproductorfull;
 
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import static java.lang.System.in;
+
 public class ServicioMusica extends Service{
 
     //posicion de la canción actual
-    private int cursor = 0;
+    private static int cursor = 0;
     //Acciones
     private static final String ACTION_PLAY = "com.movil.p.reproductorfull.action.PLAY";
     private static final String ACTION_PAUSE = "com.movil.p.reproductorfull.action.PAUSE";
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
+    private static final String ACTION_MAIN = "com.movil.p.reproductorfull.action.MAIN";
     private static final int REQUEST_CODE_PLAY = 0;
     private static final int REQUEST_CODE_PAUSE = 1;
     private static final int REQUEST_CODE_STOP = 2;
@@ -43,26 +48,41 @@ public class ServicioMusica extends Service{
     }
 
     private void foreground(){
+        /*
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
+        // notification's icon
+        remoteViews.setImageViewResource(R.id.notif_icon, R.drawable.icono_play);
+        // notification's title
+        //remoteViews.setTextViewText(R.id.notif_title, getResources().getString(R.string.app_name));
+
+
+
         Intent intent;
         PendingIntent pendingIntent;
 
+        //Accion btn play
         intent = new Intent(getApplicationContext(), MyReceiver.class);
         intent.setAction(ACTION_PLAY);
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 REQUEST_CODE_PLAY, intent, 0);
 
-        remoteViews.setOnClickPendingIntent(R.id.boton_play,
-                pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.boton_play, pendingIntent);
 
+        //Accion btn pause
         intent = new Intent(getApplicationContext(), MyReceiver.class);
         intent.setAction(ACTION_PAUSE);
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 REQUEST_CODE_PAUSE, intent, 0);
 
-        remoteViews.setOnClickPendingIntent(R.id.boton_pause,
-                pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.boton_pause, pendingIntent);
 
+        //Accion btn next
+
+
+        //Accion btn back
+
+
+        //Lanzar notificacion
         Notification notification = new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.icono_play)
                 .setOngoing(true)
@@ -71,7 +91,69 @@ public class ServicioMusica extends Service{
                 .setContent(remoteViews)
 
                 .build();
-        startForeground(100, notification);
+        startForeground(100, notification);*/
+
+        Intent intent;
+        PendingIntent pendingIntent;
+
+        int icon = R.mipmap.ic_launcher;
+        long when = System.currentTimeMillis();
+        Notification notification = new Notification(icon, "Custom Notification", when);
+
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
+        contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
+        contentView.setTextViewText(R.id.title, "Reproductor MP3");
+        //contentView.setTextViewText(R.id.text, "Linkin Park - Numb");
+        contentView.setTextColor(R.id.title, Color.parseColor("#000000"));
+        //contentView.setTextColor(R.id.text, Color.parseColor("#000000"));
+
+        //Accion btn play
+        intent = new Intent(getApplicationContext(), ServicioMusica.class);
+        intent.setAction(ACTION_PLAY);
+        pendingIntent = PendingIntent.getService(getApplicationContext(),
+                REQUEST_CODE_PLAY, intent, 0);
+        contentView.setOnClickPendingIntent(R.id.boton_play, pendingIntent);
+
+        //Accion btn pause
+        intent = new Intent(getApplicationContext(), ServicioMusica.class);
+        intent.setAction(ACTION_PAUSE);
+        pendingIntent = PendingIntent.getService(getApplicationContext(),
+                REQUEST_CODE_PAUSE, intent, 0);
+        contentView.setOnClickPendingIntent(R.id.boton_pause, pendingIntent);
+
+        //Accion btn next
+        intent = new Intent(getApplicationContext(), ServicioMusica.class);
+        intent.setAction(ACTION_NEXT);
+        intent.putExtra("cursor",cursor+1);
+        pendingIntent = PendingIntent.getService(getApplicationContext(),
+                REQUEST_CODE_NEXT, intent, 0);
+        contentView.setOnClickPendingIntent(R.id.boton_next, pendingIntent);
+
+        //Accion btn back
+        intent = new Intent(getApplicationContext(), ServicioMusica.class);
+        intent.setAction(ACTION_BACK);
+        intent.putExtra("cursor",cursor-1);
+        pendingIntent = PendingIntent.getService(getApplicationContext(),
+                REQUEST_CODE_BACK, intent, 0);
+        contentView.setOnClickPendingIntent(R.id.boton_back, pendingIntent);
+
+
+        notification.contentView = contentView;
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notification.contentIntent = contentIntent;
+
+        notification.flags |= Notification.FLAG_NO_CLEAR; //Do not clear the notification
+        notification.defaults |= Notification.DEFAULT_LIGHTS; // LED
+        notification.defaults |= Notification.DEFAULT_VIBRATE; //Vibration
+        //notification.defaults |= Notification.DEFAULT_SOUND; // Sound
+
+        mNotificationManager.notify(100, notification);
+
+
     }
 
     //******************MAIN******************************
@@ -83,6 +165,13 @@ public class ServicioMusica extends Service{
         //Btn start pulsado
         if (intent.getAction().equals(ACTION_PLAY)) {
             cursor = intent.getIntExtra("cursor",0);
+            //se configura que el movimiento ciclico del cursor
+            if(cursor>2){
+                cursor=0;
+            }
+            if(cursor<0){
+                cursor = 2;
+            }
             Log.i("Cursor seteado",String.valueOf(cursor));
             //solo se ejcutara la primer vez que le den al play
             if ( workerThread == null || !workerThread.isAlive() ) {
@@ -122,12 +211,30 @@ public class ServicioMusica extends Service{
             }
         }
 
-        //Btn cambiar de cancion pulsado
-        if (intent.getAction().equals(ACTION_NEXT) || intent.getAction().equals(ACTION_BACK)) {
+        //Btn next pulsado
+        if (intent.getAction().equals(ACTION_NEXT) ) {
 
+            MainActivity.setOneTimeOnly(0);
             if(mp != null) {
                 Log.i("siguiente","next");
-                cursor = intent.getIntExtra("cursor",0);
+                cursor++;
+                if(cursor>2){
+                    cursor=0;
+                }
+                Log.i("Cursor seteado",String.valueOf(cursor));
+                next();
+            }
+        }
+
+        //Btn back pulsado
+        if (intent.getAction().equals(ACTION_BACK)) {
+            MainActivity.setOneTimeOnly(0);
+            if(mp != null) {
+                Log.i("siguiente","next");
+                cursor--;
+                if(cursor<0){
+                    cursor = 2;
+                }
                 Log.i("Cursor seteado",String.valueOf(cursor));
                 next();
             }
@@ -205,9 +312,18 @@ public class ServicioMusica extends Service{
             case REQUEST_CODE_PAUSE :
                 mp.pause();
                 break;
+/*
+            case REQUEST_CODE_NEXT :
+                next(true);
+                break;
+
+            case REQUEST_CODE_BACK :
+                next(false);
+                break;*/
 
         }
 
     }
+
 
 }

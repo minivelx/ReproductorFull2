@@ -15,6 +15,7 @@ public class MyReceiver extends BroadcastReceiver {
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
+    private static final String ACTION_MAIN = "com.movil.p.reproductorfull.action.MAIN";
     private static final int PLAY = 0;
     private static final int PAUSE = 1;
     private static final int STOP = 2;
@@ -31,11 +32,6 @@ public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
-        if(intent.getAction()==ACTION_PAUSE){
-            Log.i("BroadcastClass","coñoo");
-        }
-
         switch (intent.getAction()){
 
             case ACTION_PLAY:
@@ -45,10 +41,15 @@ public class MyReceiver extends BroadcastReceiver {
             case ACTION_PAUSE:
                 ServicioMusica.interfaz(PAUSE);
                 break;
+
+            case ACTION_NEXT:
+                ServicioMusica.interfaz(NEXT);
+                break;
+
+            case ACTION_BACK:
+                ServicioMusica.interfaz(BACK);
+                break;
         }
-
-
-
 
     }
 }

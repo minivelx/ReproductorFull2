@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     boolean loop = false;
     //Intent
     static Intent intent;
-    int oneTimeOnly = 0;
+    static int oneTimeOnly = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,10 +160,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void next(boolean value) {
-        intent.setAction(ACTION_NEXT);
-        intent.setAction(ACTION_BACK);
+
+        if(value)
+            intent.setAction(ACTION_NEXT);
+        else
+            intent.setAction(ACTION_BACK);
         actualizarCursor(value);
-        intent.putExtra("cursor",cursor);
+        //intent.putExtra("cursor",cursor);
         startService(intent);
         //cambiar la vista y actualizar la portada de la cancion
         oneTimeOnly=0;
@@ -201,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-
-
+    public static void setOneTimeOnly(int oneTimeOnly) {
+        MainActivity.oneTimeOnly = oneTimeOnly;
+    }
 }
