@@ -1,6 +1,5 @@
 package com.movil.p.reproductorfull;
 
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,10 +7,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.in;
 
@@ -25,7 +27,6 @@ public class ServicioMusica extends Service{
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
-    private static final String ACTION_MAIN = "com.movil.p.reproductorfull.action.MAIN";
     private static final int REQUEST_CODE_PLAY = 0;
     private static final int REQUEST_CODE_PAUSE = 1;
     private static final int REQUEST_CODE_STOP = 2;
@@ -34,12 +35,16 @@ public class ServicioMusica extends Service{
 
     //Media player
     static MediaPlayer mp = null;
+    private Handler myHandler = new Handler();
+    private double startTime = 0;
     //Lista canciones
     int [] lista = {R.raw.audio, R.raw.audio2, R.raw.audio3};
     //Hilo
     private Thread workerThread = null;
     //control
     boolean shouldPause = false;
+    //notificacion
+    RemoteViews contentView;
 
     @Override
     public void onCreate() {
@@ -102,7 +107,7 @@ public class ServicioMusica extends Service{
 
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
+        contentView = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
         contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
         contentView.setTextViewText(R.id.title, "Reproductor MP3");
         //contentView.setTextViewText(R.id.text, "Linkin Park - Numb");
@@ -139,7 +144,10 @@ public class ServicioMusica extends Service{
                 REQUEST_CODE_BACK, intent, 0);
         contentView.setOnClickPendingIntent(R.id.boton_back, pendingIntent);
 
-
+        //myHandler.postDelayed(UpdateSongTime,100);
+        contentView.setTextViewText(R.id.tx2, MainActivity.timer);
+        contentView.setTextColor(R.id.tx2, Color.parseColor("#000000"));
+        //-----------------------------------------------------------------------------------------
         notification.contentView = contentView;
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -151,7 +159,8 @@ public class ServicioMusica extends Service{
         notification.defaults |= Notification.DEFAULT_VIBRATE; //Vibration
         //notification.defaults |= Notification.DEFAULT_SOUND; // Sound
 
-        mNotificationManager.notify(100, notification);
+        //mNotificationManager.notify(100, notification);
+        startForeground(100, notification);
 
 
     }
@@ -183,11 +192,14 @@ public class ServicioMusica extends Service{
                     }
                 });
                 workerThread.start();
-            //desde la segunda vez en adelante...
+                //desde la segunda vez en adelante...
             }else{
                 start();
             }
+            myHandler.postDelayed(UpdateSongTime,1000);
             foreground();
+
+
         }
 
         //Btn pause pulsado
@@ -325,5 +337,11 @@ public class ServicioMusica extends Service{
 
     }
 
+    private Runnable UpdateSongTime = new Runnable() {
 
+        public void run() {
+            foreground();
+            myHandler.postDelayed(this, 1000);
+        }
+    };
 }

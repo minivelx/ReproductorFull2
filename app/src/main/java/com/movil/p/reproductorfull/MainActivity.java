@@ -1,13 +1,8 @@
 package com.movil.p.reproductorfull;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.IntentFilter;
+
 import android.os.Handler;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,14 +25,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String ACTION_STOP = "com.movil.p.reproductorfull.action.STOP";
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
-    private static final int REQUEST_CODE_PLAY = 0;
-    private static final int REQUEST_CODE_PAUSE = 1;
     //Botones
     Button btnPause, btnStart, btnStop, btnnext, btnBack, btnrepeat;
     //Barra de progreso
     SeekBar seekbar;
     private Handler myHandler = new Handler();
     private double startTime = 0;
+    public static String timer = "2:34";
     //visor de tiempo
     TextView tx1;
     //repetir lista
@@ -57,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tx1 = (TextView)findViewById(R.id.timer);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
+        seekbar.setMax(100);//valor inicial predefinido
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -70,29 +64,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-                if (oneTimeOnly == 0) {
+                if (oneTimeOnly == 0 && ServicioMusica.getMediaPlayer()!=null) {
                     seekbar.setMax((int) ServicioMusica.getMediaPlayer().getDuration());
                     Log.i("duracion:",String.valueOf(ServicioMusica.getMediaPlayer().getDuration()/1000));
                     oneTimeOnly = 1;
                 }
 
-                if(fromUser){
-                    ServicioMusica.getMediaPlayer().seekTo(progress);
-                    seekbar.setProgress(progress);
-                }
-                //se revisa si la canción finalizo
-                if(progress >= ServicioMusica.getMediaPlayer().getDuration() -200 ){
-                    Log.i("Progressbar","canción terminada");
-                    intent.setAction(ACTION_STOP);
-                    startService(intent);
-                    //si el boton de repetir lista esta pulsado pasamos al sgte cancion
-                    if(cursor==2 && loop){
-                        next(true);
-                    }else{
-                        if(cursor!=2)
-                            next(true);
-                    }
+                if(ServicioMusica.getMediaPlayer() != null) {
 
+                    if (fromUser) {
+                        ServicioMusica.getMediaPlayer().seekTo(progress);
+                        seekbar.setProgress(progress);
+                    }
+                    //se revisa si la canción finalizo
+                    if (progress >= ServicioMusica.getMediaPlayer().getDuration() - 200) {
+                        Log.i("Progressbar", "canción terminada");
+                        intent.setAction(ACTION_STOP);
+                        startService(intent);
+                        //si el boton de repetir lista esta pulsado pasamos al sgte cancion
+                        if (cursor == 2 && loop) {
+                            next(true);
+                        } else {
+                            if (cursor != 2)
+                                next(true);
+                        }
+
+                    }
                 }
             }
         });
@@ -199,6 +196,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
                                     toMinutes((long) startTime)))
             );
+            timer = String.format("%d: %d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                    toMinutes((long) startTime)));
             seekbar.setProgress((int)startTime);
             myHandler.postDelayed(this, 100);
         }
