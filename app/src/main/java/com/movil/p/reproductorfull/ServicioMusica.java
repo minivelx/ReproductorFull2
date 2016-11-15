@@ -340,7 +340,10 @@ public class ServicioMusica extends Service{
     private Runnable UpdateSongTime = new Runnable() {
 
         public void run() {
-            foreground();
+            if(mp.isPlaying()) {
+                Log.i("not","detenido");
+                foreground();
+            }
             myHandler.postDelayed(this, 1000);
         }
     };
