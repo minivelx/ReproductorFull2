@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String ACTION_NEXT = "com.movil.p.reproductorfull.action.NEXT";
     private static final String ACTION_BACK = "com.movil.p.reproductorfull.action.BACK";
     //Botones
-    Button btnPause, btnStart, btnStop, btnnext, btnBack, btnrepeat;
+    ImageButton btnPause, btnStart, btnStop, btnnext, btnBack, btnrepeat;
     //Barra de progreso
     SeekBar seekbar;
     private Handler myHandler = new Handler();
@@ -97,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void vincularBotones() {
-        btnStart = (Button) findViewById(R.id.btnStart);
-        btnStop = (Button) findViewById(R.id.btnStop);
-        btnPause = (Button) findViewById(R.id.btnPause);
-        btnnext = (Button) findViewById(R.id.btnNext);
-        btnBack = (Button) findViewById(R.id.btnBack);
-        btnrepeat = (Button) findViewById(R.id.btnRepetir);
+        btnStart = (ImageButton) findViewById(R.id.btnStart);
+        btnStop = (ImageButton) findViewById(R.id.btnStop);
+        btnPause = (ImageButton) findViewById(R.id.btnPause);
+        btnnext = (ImageButton) findViewById(R.id.btnNext);
+        btnBack = (ImageButton) findViewById(R.id.btnBack);
+        btnrepeat = (ImageButton) findViewById(R.id.btnRepetir);
 
         btnStart.setOnClickListener(this);
         btnStop.setOnClickListener(this);
@@ -148,9 +149,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //se alterna entre On y Off
                 loop = !loop;
                 if(loop){
-                    btnrepeat.setText("ON");
+                    //btnrepeat.setText("ON");
                 }else{
-                    btnrepeat.setText("OFF");
+                    //btnrepeat.setText("OFF");
                 }
                 break;
         }

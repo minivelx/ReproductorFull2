@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     tools:context="com.movil.p.reproductorfull.MainActivity">
 
     <RelativeLayout
@@ -80,41 +81,123 @@
                 android:text="4:31"/>
         </RelativeLayout>
 
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="start"/>
+        <LinearLayout
 
-    <Button
-        android:id="@+id/btnPause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="pause"/>
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:weightSum="6.6"
+            android:elevation="6dp">
 
-    <Button
-        android:id="@+id/btnStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="stop"/>
+            <LinearLayout
+                android:layout_weight="1.2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="next"/>
+                <ImageButton
+                    android:id="@+id/btnStop"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/icono_stop"
+                    android:scaleType="centerCrop"
+                    android:backgroundTint="@color/colorAccent2"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="back"/>
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/btnRepetir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="OFF"/>
+            <LinearLayout
+                android:layout_weight="1.2"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/colorAccent2"
+                    android:src="@drawable/icono_back"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.8"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:weightSum="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/btnPause"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="28dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/icono_pause"
+                        android:background="@drawable/boton_circular"
+                        />
+                    <ImageButton
+                        android:id="@+id/btnStart"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="28dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/icono_play"
+                        android:background="@drawable/boton_circular"
+                        />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_weight="1.2"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp">
+
+                <ImageButton
+                    android:id="@+id/btnNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/colorAccent2"
+                    android:src="@drawable/icono_next"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.2"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp">
+
+                <ImageButton
+                    android:id="@+id/btnRepetir"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/colorAccent2"
+                    android:src="@drawable/icono_repetir"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+            </LinearLayout>
+
+
+
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
