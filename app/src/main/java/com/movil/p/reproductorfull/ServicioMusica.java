@@ -144,6 +144,14 @@ public class ServicioMusica extends Service{
                 REQUEST_CODE_BACK, intent, 0);
         contentView.setOnClickPendingIntent(R.id.boton_back, pendingIntent);
 
+        //Accion btn cancel
+        intent = new Intent(getApplicationContext(), ServicioMusica.class);
+        intent.setAction(ACTION_STOP);
+        intent.putExtra("cursor",cursor);
+        pendingIntent = PendingIntent.getService(getApplicationContext(),
+                REQUEST_CODE_BACK, intent, 0);
+        contentView.setOnClickPendingIntent(R.id.boton_cancel, pendingIntent);
+
         //myHandler.postDelayed(UpdateSongTime,100);
         contentView.setTextViewText(R.id.tx2, MainActivity.timer);
         contentView.setTextColor(R.id.tx2, Color.parseColor("#000000"));
@@ -196,7 +204,7 @@ public class ServicioMusica extends Service{
             }else{
                 start();
             }
-            myHandler.postDelayed(UpdateSongTime,1000);
+            myHandler.postDelayed(UpdateSongTime,100);
             foreground();
 
 
@@ -346,7 +354,7 @@ public class ServicioMusica extends Service{
                 Log.i("not","detenido");
                 foreground();
             }
-            myHandler.postDelayed(this, 1000);
+            myHandler.postDelayed(this, 100);
         }
     };
 }
