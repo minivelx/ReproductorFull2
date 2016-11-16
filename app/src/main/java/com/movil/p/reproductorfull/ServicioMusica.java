@@ -101,7 +101,7 @@ public class ServicioMusica extends Service{
         Intent intent;
         PendingIntent pendingIntent;
 
-        int icon = R.mipmap.ic_launcher;
+        int icon = R.drawable.ic_action_name;
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, "Custom Notification", when);
 
@@ -259,7 +259,12 @@ public class ServicioMusica extends Service{
                 next();
             }
         }
-
+        if(cursor>2){
+            cursor=0;
+        }
+        if(cursor<0){
+            cursor = 2;
+        }
         MainActivity.setCursor(cursor);
         return START_STICKY;
     }
