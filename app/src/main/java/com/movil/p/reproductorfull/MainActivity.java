@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static int oneTimeOnly = 0;
     //vista
     ImageView img;
-    List<Cancion> personas = new ArrayList<>();
+    static List<Cancion> personas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,9 +165,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //se alterna entre On y Off
                 loop = !loop;
                 if(loop){
-                    //btnrepeat.setText("ON");
+                    btnrepeat.setImageResource(R.drawable.icono_reperir_r);
                 }else{
-                    //btnrepeat.setText("OFF");
+                    btnrepeat.setImageResource(R.drawable.icono_repetir);
                 }
                 break;
         }
@@ -228,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 btnStart.setVisibility(View.VISIBLE);
             }
 
+            setearVista();
+
             seekbar.setProgress((int)startTime);
             myHandler.postDelayed(this, 100);
         }
@@ -251,5 +253,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         nombre.setText(personas.get(cursor).getNombre());
         img.setImageResource(caratulas[cursor]);
 
+    }
+
+    static public String getTitulo(){
+        return personas.get(cursor).getNombre();
+    }
+
+    static public String getArtista(){
+        return personas.get(cursor).getInterprete();
+    }
+
+    static void setCursor(int cur){
+        cursor = cur;
     }
 }

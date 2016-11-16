@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/seekBar"
-                android:text="0:01"/>
+                android:text="0:00"/>
 
             <TextView
                 android:id="@+id/timer2"
@@ -78,7 +78,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/seekBar"
                 android:layout_alignParentRight="true"
-                android:text="4:31"/>
+                android:text=""
+                />
         </RelativeLayout>
 
         <LinearLayout
@@ -143,7 +144,7 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/icono_pause"
+                        android:src="@drawable/icono_pause2"
                         android:background="@drawable/boton_circular"
                         />
                     <ImageButton
@@ -154,7 +155,7 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/icono_play"
+                        android:src="@drawable/icono_play2"
                         android:background="@drawable/boton_circular"
                         />
 

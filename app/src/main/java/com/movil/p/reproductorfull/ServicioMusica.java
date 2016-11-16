@@ -109,7 +109,7 @@ public class ServicioMusica extends Service{
 
         contentView = new RemoteViews(getPackageName(), R.layout.notificacion_audio);
         contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
-        contentView.setTextViewText(R.id.title, "Reproductor MP3");
+        contentView.setTextViewText(R.id.title, MainActivity.getTitulo() + " (" +MainActivity.getArtista() + ")");
         //contentView.setTextViewText(R.id.text, "Linkin Park - Numb");
         contentView.setTextColor(R.id.title, Color.parseColor("#000000"));
         //contentView.setTextColor(R.id.text, Color.parseColor("#000000"));
@@ -251,6 +251,8 @@ public class ServicioMusica extends Service{
                 next();
             }
         }
+
+        MainActivity.setCursor(cursor);
         return START_STICKY;
     }
     //*****************************************************
