@@ -9,15 +9,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     //ID de la cancion inicial
     private static int cursor = 0;
+    int [] caratulas = {R.drawable.skrillex, R.drawable.guns, R.drawable.linkin};
     //numero de canciones en la lista
     private int num = 3;
     //Acciones
@@ -34,12 +39,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double startTime = 0;
     public static String timer = "2:34";
     //visor de tiempo
-    TextView tx1;
+    TextView tx1,nombre,artista;
     //repetir lista
     boolean loop = false;
     //Intent
     static Intent intent;
     static int oneTimeOnly = 0;
+    //vista
+    ImageView img;
+    List<Cancion> personas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +57,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         vincularBotones();
         intent = new Intent(MainActivity.this,ServicioMusica.class);
 
+        List<Cancion> personas = initSongsList();
+        ListView lista = (ListView) findViewById(R.id.lista);
+        CustomAdapter adapter = new CustomAdapter(this,personas);
+        lista.setAdapter(adapter);
+
         tx1 = (TextView)findViewById(R.id.timer);
+        nombre = (TextView)findViewById(R.id.nombre);
+        artista = (TextView)findViewById(R.id.artista);
+        img = (ImageView) findViewById(R.id.fondo);
+
         seekbar = (SeekBar) findViewById(R.id.seekBar);
         seekbar.setMax(100);//valor inicial predefinido
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -89,12 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             if (cursor != 2)
                                 next(true);
                         }
-
+                        setearVista();
                     }
                 }
             }
         });
-
+        setearVista();
     }
 
     private void vincularBotones() {
@@ -122,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setAction(ACTION_PLAY);
                 intent.putExtra("cursor",cursor);
                 startService(intent);
-
                 seekbar.setProgress((int)startTime);
                 myHandler.postDelayed(UpdateSongTime,100);
                 break;
@@ -184,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(cursor<0){
             cursor = num -1;
         }
+        setearVista();
     }
 
     private Runnable UpdateSongTime = new Runnable() {
@@ -202,6 +219,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
                                     toMinutes((long) startTime)));
+
+            if(ServicioMusica.getMediaPlayer().isPlaying()) {
+                btnPause.setVisibility(View.VISIBLE);
+                btnStart.setVisibility(View.INVISIBLE);
+            }else{
+                btnPause.setVisibility(View.INVISIBLE);
+                btnStart.setVisibility(View.VISIBLE);
+            }
+
             seekbar.setProgress((int)startTime);
             myHandler.postDelayed(this, 100);
         }
@@ -209,5 +235,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static void setOneTimeOnly(int oneTimeOnly) {
         MainActivity.oneTimeOnly = oneTimeOnly;
+    }
+
+    private List<Cancion> initSongsList() {
+
+        personas.add(new Cancion(caratulas[0],"Bangarabab", "Skrillex"));
+        personas.add(new Cancion(caratulas[1], "Welcome to Jungle", "Guns & Roses"));
+        personas.add(new Cancion(caratulas[2], "Papercut", "Linkin Park"));
+        return personas;
+    }
+
+    public void setearVista(){
+        nombre.setText(personas.get(cursor).getNombre());
+        artista.setText(personas.get(cursor).getInterprete());
+        nombre.setText(personas.get(cursor).getNombre());
+        img.setImageResource(caratulas[cursor]);
+
     }
 }
